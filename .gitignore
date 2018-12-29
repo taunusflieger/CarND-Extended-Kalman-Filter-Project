@@ -5,7 +5,7 @@
 build/
 
 # editor config
-.vscode/
+#.vscode/
 
 # Xcode
 *.pbxuser
