@@ -29,7 +29,7 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 
 VectorXd KalmanFilter::ConvertToPolarCoords(const VectorXd& x_state) {
 
-  VectorXd h(3);
+  VectorXd h = VectorXd(3); // h(x_)
 
   float px = x_state(0);
   float py = x_state(1);
@@ -39,17 +39,17 @@ VectorXd KalmanFilter::ConvertToPolarCoords(const VectorXd& x_state) {
   float psq = px*px+py*py;
 
   //check division by zero
-  if (psq < 0.0001){
+  if (psq < 0.000001){
     cout << "ConvertToPolarCoords () - Error - Division by Zero" << endl;
     return h;
   }
-  if (fabs(px) < 0.0001) {
+  if (fabs(px) < 0.000001) {
     cout << "ConvertToPolarCoords () - Error - Division by Zero" << endl;
     return h;
   }
 
-  float c2 = sqrt(psq);
-  float c3 = atan(py / px);
+  float c2 = sqrtf(psq);
+  float c3 = atan2f(py, px);
   float c4 = (px * vx + py * vy) / c2;
 
   h << c2, c3, c4;
@@ -83,16 +83,17 @@ void KalmanFilter::Update(const VectorXd &z) {
   P_ = (I - K * H_) * P_;
 }
 
-void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-   * update the state by using Extended Kalman Filter equations
-   */
 
+ void KalmanFilter::UpdateEKF(const VectorXd &z) {
+  
   VectorXd y = z - ConvertToPolarCoords(x_);
+
+  // Normalize the result to be between -pi and pi
+  y[1] -= (2 * M_PI) * floor((y[1] + M_PI) / (2 * M_PI));
+  
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * S.transpose();
+  MatrixXd K = P_ * Ht * S.inverse();
 
   // new state estimate
   x_ = x_ + K * y;
@@ -100,3 +101,5 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
   P_ = (I - K * H_) * P_;
 }
+
+

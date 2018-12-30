@@ -42,6 +42,8 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
   // calculate the squared root
   rmse = rmse.array().sqrt();
 
+   cout << "RMS:" << rmse(0) << "," << rmse(1) << "," << rmse(2) << "," << rmse(3) << endl;
+
   // return the result
   return rmse;
 }
@@ -57,8 +59,10 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float psq = px*px+py*py;
   
    // Check for division by zero
-  if (psq < 0.00001)
+  if (psq < 0.00001) {
+    cout << "CalculateJacobian division by zero" << endl;
     return Hj;
+  }
 
   float psqt = sqrt(psq);
   float c1 = px / psqt;

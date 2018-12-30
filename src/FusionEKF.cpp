@@ -58,8 +58,8 @@ FusionEKF::FusionEKF() {
 			  		  0, 1, 0, 0;
 
 	//set the acceleration noise components
-	noise_ax = 9;
-	noise_ay = 9;
+	noise_ax = 10;
+	noise_ay = 10;
 }
 
 /**
@@ -80,8 +80,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     // first measurement
     cout << "EKF initialize: " << endl;
-    ekf_.x_ = VectorXd(4);
-    ekf_.x_ << 1, 1, 1, 1;
+    //ekf_.x_ = VectorXd(4);
+    //ekf_.x_ << 1, 1, 1, 1;
 
     // initialize state convariance matrix
     Eigen::MatrixXd P_init(4,4);
@@ -115,6 +115,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       ekf_.Init(x_init, P_init, F_init, Hj_, R_radar_, Q_init);
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
+      cout << "Lidar - step 1" << endl;
+
       // Initialize state
       Eigen::VectorXd x_init(4);
       x_init << measurement_pack.raw_measurements_[0], 
@@ -194,6 +196,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   }
 
   // print the output
-  cout << "x_ = " << ekf_.x_ << endl;
-  cout << "P_ = " << ekf_.P_ << endl;
+  // << "x_ = " << ekf_.x_ << endl;
+  // cout << "P_ = " << ekf_.P_ << endl;
 }
