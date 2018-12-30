@@ -4,6 +4,10 @@
 #include "Eigen/Dense"
 
 class KalmanFilter {
+ private:
+  // converts cartesian to polar coordinates
+  Eigen::VectorXd ConvertToPolarCoords(const Eigen::VectorXd& x_state);
+
  public:
   /**
    * Constructor
